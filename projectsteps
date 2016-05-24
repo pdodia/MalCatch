@@ -1,0 +1,22 @@
+-Setup cuckoo
+-Python script
+	1. Scan email for malicious attachments and urls
+	IF URL:
+		2. Perform elastic search to find out if url present in malicious urls in the 			elastic search DB	
+	3. use cuckoo api (submit url or file for analysis)
+	4. use cuckoo analysis results
+		- build signatures 
+			-check if a file is created by the malware (.exe, .pdf etc)
+			-check if host ips are malicious 
+(use virus total's ip scanner :https://github.com/clairmont32/VirusTotal-IP-Scanner/tree/VirusTotal_IP_Scanner_1.0)
+			-check if DNS domains are malicious (elastic search + virusTotal+malwar)
+(VIRUS TOTAL DOMAIN SCANNER: https://github.com/clairmont32/VT-Domain-Scanner/blob/master/VT_Domain_Scanner.py)
+
+https://www.virustotal.com/en/faq/#virustotal-api
+https://www.virustotal.com/en/documentation/public-api/
+	
+	
+
+	
+	
+

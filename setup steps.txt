@@ -1,0 +1,74 @@
+Video Tutorial:
+https://www.youtube.com/watch?v=OzNMkR6yaJ0
+
+Go to Devices > add guest additions to share the host drive with the virutal machines
+
+Network option for VM
+- Choose NAT Network to make your host a router for all the VMs
+- in VM go to LAN connection status > LAN properties > IPv4
+    - configure the Host and VM ips (VM: 192.168.56.102, subnet mask: same as host, dns: host ip (192.168.56.1))
+------------------------------------------------------
+NOTE: 
+If you want NAT Network option
+-VM ip 10.0.2. xx, xx > 3
+- subnet mask : 255.255.255.0
+-default gateway (host ip) : 10.0.2.1
+- preferred DNS server: same as host ip if u want host to resolve domain names
+-------------------------------------------------------
+
+-Set result server on vboxnet0 hostonly network:
+command: VBoxManage hostonlyif ipconfig vboxnet0 --ip 192.168.56.1 --netmask 255.255.255.0
+
+----------------------------------------------------------
+----------------------------------------------------------
+Working configuration
+----------------------------------------------------------
+----------------------------------------------------------
+VM: network: Host only : interface: vboxnet0
+    Adapter 2 : network 2: for internet: NAT
+    ip: 192.168.56.102
+    net mask: same as host : 255.255.255.0
+    dns: 192.168.56.1 (host ip)
+
+Host: ip: 192.168.56.1
+run : VBoxManage hostonlyif ipconfig vboxnet0 --ip 192.168.56.1 --netmask 255.255.255.0 to begin HOST ONLY network
+
+
+
+Cuckoo: download from github : https://github.com/cuckoosandbox/community
+useful links: 
+https://cuckoo.readthedocs.io/en/latest/installation/host/requirements/?highlight=tcpdump#installing-tcpdump
+https://github.com/cuckoosandbox/cuckoo/issues/617
+https://github.com/cuckoosandbox/cuckoo/issues/704
+https://gwallgofi.com/cuckoo-sandbox-part-5-verification-conclusion/
+https://github.com/cuckoosandbox/cuckoo/issues/320
+https://gwallgofi.com/cuckoo-sandbox-part-4-testing-continued/
+
+NOTE: dont create lot of snapshots in VM, create one called "snap" and change default snapshots in cuckoo configuration
+
+When feeding an analysis task to cuckoo:
+
+-START THE VBOXNET0 for TCP dump
+run :  VBoxManage hostonlyif ipconfig vboxnet0 --ip 192.168.56.1 --netmask 255.255.255.0 to begin HOST ONLY network
+
+-FEED THE ANALYSIS TASK FROM ANOTHER TERMINAL
+-python manage.py runserver in web/
+-check the analysis 
+
+
+RUN SCRIPT
+1. RUN API
+	./api
+
+2. RUN ELASTIC SEARCH
+	service elasticsearch start
+	service elasticsearch status
+
+3. RUN SCRIPT
+	python script.py
+
+MALWARE SAMPLES:
+https://zeltser.com/malware-sample-sources/
+http://malshare.com/
+
+
