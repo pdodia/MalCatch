@@ -3,6 +3,9 @@ import json
 from bulk_entry import search_url, add_index, remove_index
 import subprocess
 from elasticsearch import Elasticsearch
+import json
+from pprint import pprint
+
 
 ## Global variables ##
 global elastic_search_set
@@ -70,6 +73,28 @@ def submit_file(file_path):
 
 	return
 
+def getreport_results(taskid):
+	with open('cuckoo-master/storage/analyses/'+str(taskid)+'/reports/report.json') as data_file:
+		data = json.load(data_file)
+	
+	score = data["info"]["score"]
+	host_ips = data["network"]["hosts"]
+	dns_domains = data["network"]["dns"][0]["request"]
+	#pprint(host_ips)
+	#pprint(dns_domains)
+
+	return (score,host_ips, dns_domains)
+
+def check_dnslookup(dns_domains):
+	#Check elastic search DB
+	#Feed to VirusTotal and Malwar
+
+	return
+
+def check_hostips(host_ips):
+	#Feed to VirusTotal and Malwar
+	return
+
 
 #########################################################
 ###### ----------------- MAIN ---------------------######
@@ -90,9 +115,13 @@ def submit_file(file_path):
 #-----Set the virtual network for tcp dump--------#
 subprocess.call(["VBoxManage" ,"hostonlyif" ,"ipconfig" ,"vboxnet0" ,"--ip", "192.168.56.1", "--netmask", "255.255.255.0"])
 
-# --- Run CUCKOO REST API -------#
+# ----- Run CUCKOO REST API -------#
 #subprocess.call("./Documents/cuckooProject/cuckoo-master/utils/api.py")
 
+#----- Report Results ---------#
+getreport_results(12)
+
+#----- Submit URL/FILE ----------#
 #print(elastic_search_set)
-submit_url("http://www.gptecno.it/")
+#submit_url("http://www.gptecno.it/")
 #submit_file("/home/dodiap/Documents/cuckooProject/malware_files/ytisf-theZoo-9e11234/malwares/Source/Original/ZIB_Trojan/ZIB-Trojan/compileZIB.py")
