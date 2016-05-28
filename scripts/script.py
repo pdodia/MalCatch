@@ -1,6 +1,7 @@
 import requests
 import json
 from bulk_entry import search_url, add_index, remove_index
+from vt_ipscan import ipscan
 import subprocess
 from elasticsearch import Elasticsearch
 import json
@@ -80,19 +81,43 @@ def getreport_results(taskid):
 	score = data["info"]["score"]
 	host_ips = data["network"]["hosts"]
 	dns_domains = data["network"]["dns"][0]["request"]
+	virustotal_total = 0
+	virustotal_pos = 0
+
+	## virus total report ##
+	if data.has_key("virustotal"):
+		if data["virustotal"].has_key("total"):
+			virustotal_total = data["virustotal"]["total"]
+			if data["virustotal"].has_key("summary"):
+				if data["virustotal"]["summary"].has_key("positives"):
+					virustotal_pos = data["virustotal"]["summary"]["positives"]
+	
+	#virustotal, total, summary, positives
 	#pprint(host_ips)
 	#pprint(dns_domains)
+	#pprint(virustotal_total)
 
-	return (score,host_ips, dns_domains)
+	return (score, host_ips, dns_domains, virustotal_total, virustotal_pos)
 
 def check_dnslookup(dns_domains):
 	#Check elastic search DB
 	#Feed to VirusTotal and Malwar
+	result = True #if domains referred during the analysis are malicious
+	#pprint(dns_domains)
 
-	return
+	for url in dns_domains:
+		result = result and search_elasticSearch(url)
+
+	return result
 
 def check_hostips(host_ips):
 	#Feed to VirusTotal and Malwar
+	for ip in host_ips:
+		vt_ipscan = ipscan(ip)
+		pprint("from my script")
+		pprint(vt_ipscan[0])
+		pprint(vt_ipscan[1])
+		
 	return
 
 
@@ -119,9 +144,25 @@ subprocess.call(["VBoxManage" ,"hostonlyif" ,"ipconfig" ,"vboxnet0" ,"--ip", "19
 #subprocess.call("./Documents/cuckooProject/cuckoo-master/utils/api.py")
 
 #----- Report Results ---------#
-getreport_results(12)
+Malcatch = False #Final say on the url/file, True if deemed malicious, False otherwise
+results = getreport_results(11)
+score = results[0]
+host_ips = results[1] 
+dns_domains = results[2] 
+virustotal_total = results[3] 
+virustotal_pos = results[4]
+
+# ----DNS domain analysis --------#
+#pprint(virustotal_pos)
+#pprint(virustotal_total)
+vr = 100.0 * virustotal_pos/virustotal_total #if virus total positives are >50%, the link is tagged malicious
+pprint(vr)
+pprint(check_dnslookup(dns_domains) and vr >= 50.0)
+
+# ------- Host ip analysis ---------#
+check_hostips(host_ips)
 
 #----- Submit URL/FILE ----------#
-#print(elastic_search_set)
+#print(elastic_search_(set)
 #submit_url("http://www.gptecno.it/")
 #submit_file("/home/dodiap/Documents/cuckooProject/malware_files/ytisf-theZoo-9e11234/malwares/Source/Original/ZIB_Trojan/ZIB-Trojan/compileZIB.py")
