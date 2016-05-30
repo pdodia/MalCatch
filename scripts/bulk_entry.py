@@ -146,7 +146,7 @@ def add_index():
     #es.indices.delete(index = 'black_domains', ignore=400)
 
     #print(es.search(index="black_domains")['hits']['total'])
-
+    
 
     ## Create a new index 'black domains' ##
     es.indices.create(index="black_domains", ignore=400, body=mapping)
@@ -262,19 +262,19 @@ def add_index():
 
 #Search url in db and returns true or false
 def search_url(url):
-    print("searching url in database.....")
+    #print("searching url in database.....")
     #search3 = {"query": {"match": {"domain": "2biking.com"}}}
     search3 = {"query": {"match": {"domain": url}}}
     search_result = es.search(index='black_domains', body=search3)
     #x = dumps(search_result['aggregations'], indent=2)
     x = dumps(search_result['hits']['total'], indent=2)
-    print(x)
+    #print(x)
     if(x > 0):
         result = True
     else:
         result = False
 
-    print(result)
+    #print(result)
     return result
 
 
